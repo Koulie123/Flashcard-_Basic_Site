@@ -54,6 +54,7 @@
             justify-content: center;
             cursor: pointer;
             user-select: none;
+            position: relative;
         }
 
         .flashcard:hover {
@@ -119,6 +120,33 @@
             font-size: 14px;
             color: #666;
         }
+
+        .speaker-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #4CAF50;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            transition: background-color 0.3s;
+            z-index: 10;
+        }
+
+        .speaker-btn:hover {
+            background-color: #45a049;
+        }
+
+        .speaker-btn:active {
+            transform: scale(0.95);
+        }
     </style>
 </head>
 <body>
@@ -133,6 +161,7 @@
         <div class="instruction">Click the card to flip</div>
 
         <div class="flashcard" id="flashcard">
+            <button class="speaker-btn" id="speakerBtn" title="Play audio">🔊</button>
             <div class="word-label" id="wordLabel"></div>
             <div class="word" id="word"></div>
             <div class="sentence" id="sentence1"></div>
@@ -164,6 +193,7 @@
         const nextBtn = document.getElementById('nextBtn');
         const spanishToEnglishBtn = document.getElementById('spanishToEnglish');
         const englishToSpanishBtn = document.getElementById('englishToSpanish');
+        const speakerBtn = document.getElementById('speakerBtn');
 
         function showCard() {
             isFlipped = false;
@@ -233,8 +263,36 @@
             showCard();
         }
 
+        function speak() {
+            // Cancel any ongoing speech
+            window.speechSynthesis.cancel();
+
+            // Determine the language based on current mode and flip state
+            const lang = (mode === 'spanishToEnglish' && !isFlipped) || (mode === 'englishToSpanish' && isFlipped)
+                ? 'es-ES'
+                : 'en-US';
+
+            // Get the text to speak
+            const word = wordElement.textContent;
+            const sentence1 = sentence1Element.textContent;
+            const sentence2 = sentence2Element.textContent;
+            const textToSpeak = `${word}. ${sentence1}. ${sentence2}`;
+
+            // Create and configure the utterance
+            const utterance = new SpeechSynthesisUtterance(textToSpeak);
+            utterance.lang = lang;
+            utterance.rate = 0.85; // Slightly slower for learning
+
+            // Speak
+            window.speechSynthesis.speak(utterance);
+        }
+
         // Event listeners
         flashcard.addEventListener('click', flipCard);
+        speakerBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent card flip when clicking speaker
+            speak();
+        });
         nextBtn.addEventListener('click', nextCard);
         prevBtn.addEventListener('click', prevCard);
         spanishToEnglishBtn.addEventListener('click', () => setMode('spanishToEnglish'));
