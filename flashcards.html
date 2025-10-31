@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spanish Flashcards</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .mode-toggle {
+            margin-bottom: 30px;
+        }
+
+        .mode-toggle button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: 2px solid #333;
+            background-color: white;
+            border-radius: 5px;
+        }
+
+        .mode-toggle button.active {
+            background-color: #333;
+            color: white;
+        }
+
+        .flashcard {
+            background: white;
+            border: 2px solid #333;
+            border-radius: 10px;
+            padding: 40px 30px;
+            margin: 20px 0;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .flashcard:hover {
+            background-color: #fafafa;
+        }
+
+        .word-label {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 10px;
+            font-weight: normal;
+        }
+
+        .word {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .sentence {
+            font-size: 20px;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .flipped {
+            color: #555;
+        }
+
+        .controls {
+            margin-top: 20px;
+        }
+
+        .controls button {
+            padding: 12px 30px;
+            margin: 0 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: 2px solid #333;
+            background-color: white;
+            border-radius: 5px;
+        }
+
+        .controls button:hover {
+            background-color: #333;
+            color: white;
+        }
+
+        .progress {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #666;
+        }
+
+        .instruction {
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Spanish Flashcards</h1>
+
+        <div class="mode-toggle">
+            <button id="spanishToEnglish" class="active">Spanish → English</button>
+            <button id="englishToSpanish">English → Spanish</button>
+        </div>
+
+        <div class="instruction">Click the card to flip</div>
+
+        <div class="flashcard" id="flashcard">
+            <div class="word-label" id="wordLabel"></div>
+            <div class="word" id="word"></div>
+            <div class="sentence" id="sentence"></div>
+        </div>
+
+        <div class="controls">
+            <button id="prevBtn">Previous</button>
+            <button id="nextBtn">Next</button>
+        </div>
+
+        <div class="progress" id="progress"></div>
+    </div>
+
+    <script src="vocabulary.js"></script>
+    <script>
+
+        let currentIndex = 0;
+        let isFlipped = false;
+        let mode = 'spanishToEnglish'; // or 'englishToSpanish'
+
+        const flashcard = document.getElementById('flashcard');
+        const wordLabelElement = document.getElementById('wordLabel');
+        const wordElement = document.getElementById('word');
+        const sentenceElement = document.getElementById('sentence');
+        const progressElement = document.getElementById('progress');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const spanishToEnglishBtn = document.getElementById('spanishToEnglish');
+        const englishToSpanishBtn = document.getElementById('englishToSpanish');
+
+        function showCard() {
+            isFlipped = false;
+            flashcard.classList.remove('flipped');
+
+            if (mode === 'spanishToEnglish') {
+                wordLabelElement.textContent = 'Word:';
+                wordElement.textContent = vocabulary[currentIndex].spanish;
+                sentenceElement.textContent = vocabulary[currentIndex].spanishSentence;
+            } else {
+                wordLabelElement.textContent = 'Word:';
+                wordElement.textContent = vocabulary[currentIndex].english;
+                sentenceElement.textContent = vocabulary[currentIndex].englishSentence;
+            }
+
+            updateProgress();
+        }
+
+        function flipCard() {
+            isFlipped = !isFlipped;
+
+            if (isFlipped) {
+                flashcard.classList.add('flipped');
+                if (mode === 'spanishToEnglish') {
+                    wordLabelElement.textContent = 'Translation:';
+                    wordElement.textContent = vocabulary[currentIndex].english;
+                    sentenceElement.textContent = vocabulary[currentIndex].englishSentence;
+                } else {
+                    wordLabelElement.textContent = 'Traducción:';
+                    wordElement.textContent = vocabulary[currentIndex].spanish;
+                    sentenceElement.textContent = vocabulary[currentIndex].spanishSentence;
+                }
+            } else {
+                showCard();
+            }
+        }
+
+        function updateProgress() {
+            progressElement.textContent = `Card ${currentIndex + 1} of ${vocabulary.length}`;
+        }
+
+        function nextCard() {
+            currentIndex = (currentIndex + 1) % vocabulary.length;
+            showCard();
+        }
+
+        function prevCard() {
+            currentIndex = (currentIndex - 1 + vocabulary.length) % vocabulary.length;
+            showCard();
+        }
+
+        function setMode(newMode) {
+            mode = newMode;
+
+            if (mode === 'spanishToEnglish') {
+                spanishToEnglishBtn.classList.add('active');
+                englishToSpanishBtn.classList.remove('active');
+            } else {
+                englishToSpanishBtn.classList.add('active');
+                spanishToEnglishBtn.classList.remove('active');
+            }
+
+            showCard();
+        }
+
+        // Event listeners
+        flashcard.addEventListener('click', flipCard);
+        nextBtn.addEventListener('click', nextCard);
+        prevBtn.addEventListener('click', prevCard);
+        spanishToEnglishBtn.addEventListener('click', () => setMode('spanishToEnglish'));
+        englishToSpanishBtn.addEventListener('click', () => setMode('englishToSpanish'));
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                if (isFlipped) {
+                    nextCard();
+                } else {
+                    flipCard();
+                }
+            } else if (e.key === 'ArrowLeft') {
+                prevCard();
+            }
+        });
+
+        // Initialize
+        showCard();
+    </script>
+</body>
+</html>
