@@ -78,6 +78,11 @@
             font-size: 20px;
             text-align: center;
             line-height: 1.5;
+            margin-bottom: 8px;
+        }
+
+        .sentence:last-child {
+            margin-bottom: 0;
         }
 
         .flipped {
@@ -130,7 +135,8 @@
         <div class="flashcard" id="flashcard">
             <div class="word-label" id="wordLabel"></div>
             <div class="word" id="word"></div>
-            <div class="sentence" id="sentence"></div>
+            <div class="sentence" id="sentence1"></div>
+            <div class="sentence" id="sentence2"></div>
         </div>
 
         <div class="controls">
@@ -151,7 +157,8 @@
         const flashcard = document.getElementById('flashcard');
         const wordLabelElement = document.getElementById('wordLabel');
         const wordElement = document.getElementById('word');
-        const sentenceElement = document.getElementById('sentence');
+        const sentence1Element = document.getElementById('sentence1');
+        const sentence2Element = document.getElementById('sentence2');
         const progressElement = document.getElementById('progress');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
@@ -165,11 +172,13 @@
             if (mode === 'spanishToEnglish') {
                 wordLabelElement.textContent = 'Word:';
                 wordElement.textContent = vocabulary[currentIndex].spanish;
-                sentenceElement.textContent = vocabulary[currentIndex].spanishSentence;
+                sentence1Element.textContent = vocabulary[currentIndex].spanishSentence1;
+                sentence2Element.textContent = vocabulary[currentIndex].spanishSentence2;
             } else {
                 wordLabelElement.textContent = 'Word:';
                 wordElement.textContent = vocabulary[currentIndex].english;
-                sentenceElement.textContent = vocabulary[currentIndex].englishSentence;
+                sentence1Element.textContent = vocabulary[currentIndex].englishSentence1;
+                sentence2Element.textContent = vocabulary[currentIndex].englishSentence2;
             }
 
             updateProgress();
@@ -183,11 +192,13 @@
                 if (mode === 'spanishToEnglish') {
                     wordLabelElement.textContent = 'Translation:';
                     wordElement.textContent = vocabulary[currentIndex].english;
-                    sentenceElement.textContent = vocabulary[currentIndex].englishSentence;
+                    sentence1Element.textContent = vocabulary[currentIndex].englishSentence1;
+                    sentence2Element.textContent = vocabulary[currentIndex].englishSentence2;
                 } else {
                     wordLabelElement.textContent = 'Traducción:';
                     wordElement.textContent = vocabulary[currentIndex].spanish;
-                    sentenceElement.textContent = vocabulary[currentIndex].spanishSentence;
+                    sentence1Element.textContent = vocabulary[currentIndex].spanishSentence1;
+                    sentence2Element.textContent = vocabulary[currentIndex].spanishSentence2;
                 }
             } else {
                 showCard();
